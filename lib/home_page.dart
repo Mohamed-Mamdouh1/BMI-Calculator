@@ -1,25 +1,47 @@
 import 'dart:math';
 
+import 'package:contacts/auth/login_page.dart';
 import 'package:contacts/constants.dart';
 import 'package:contacts/screens/man_screens.dart';
 import 'package:contacts/screens/women_screens.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class Homepage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
-  State<Homepage> createState() => _HomepageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class _HomePageState extends State<HomePage> {
   bool isMale = true;
   int height = 180;
   int weight = 68;
   int age = 20;
 
+  userSignOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (ctx) => const LoginPage()),
+        (route) => false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          InkWell(
+            splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+
+              onTap: ()async {
+              await userSignOut();
+              },
+              child: const Icon(
+                Icons.logout_rounded,
+                color: Color(0xfff50d56),
+              )),
+        ],
         title: const Text("BMI CALCULATOR"),
         centerTitle: true,
         backgroundColor: kBackGround,
@@ -48,8 +70,9 @@ class _HomepageState extends State<Homepage> {
                         borderRadius: BorderRadius.circular(
                           16,
                         ),
-                        color:
-                            isMale == true ? Color(0xfff50d56) : kPrimaryColor,
+                        color: isMale == true
+                            ? const Color(0xfff50d56)
+                            : kPrimaryColor,
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -348,11 +371,11 @@ class _HomepageState extends State<Homepage> {
                   bottomRight: Radius.circular(20),
                 )),
                 onPressed: () {
-                  var bmi = weight / pow(height / 100, 2);
+                  var bmi = weight / pow(height / 100, 2) + age / 10;
                   if (isMale == true) {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                          print(bmi);
+                      print(bmi);
                       return MenScreens(
                         bmi: bmi,
                         isMale: 'MEN',
